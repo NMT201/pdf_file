@@ -5,3 +5,5 @@ ffmpeg
 libsm6 
 libxext6
 ghostscript
+python-poppler
+poppler-utils

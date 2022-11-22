@@ -14,7 +14,6 @@ def shopee(pdf_file, df_day_du):
         'Dòng máy' : []
     }
     ocr = PaddleOCR(show_log=False)
-    file = open('result.txt', 'w', encoding='utf-8')
     for n, page in enumerate(reader.pages[:]):
         list_tsp = []
         page_text = page.extract_text().split('\n')

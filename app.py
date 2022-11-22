@@ -12,6 +12,7 @@ from shopee import shopee
 import streamlit as st
 import pandas as pd
 import json
+import os
 
 
 
@@ -68,10 +69,13 @@ if selected == 'Shopee':
     )
 
     if uploaded_file is not None:
-        df_day_du = json.load(open('shopee_list.json', 'r'))
-        shows = shopee(uploaded_file, df_day_du)
-        uploaded_file.seek(0)
-        show_table(shows)
+        if not os.path.exists('shopee_list.json'):
+            st.warning('Chưa nhập file shopee đầy đủ')
+        else:
+            df_day_du = json.load(open('shopee_list.json', 'r'))
+            shows = shopee(uploaded_file, df_day_du)
+            uploaded_file.seek(0)
+            show_table(shows)
     else:
         st.stop()
             

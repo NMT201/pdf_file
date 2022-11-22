@@ -7,3 +7,4 @@ pandastable==0.13.0
 pdf2image==1.16.0
 streamlit-option-menu==0.3.2
 streamlit-aggrid==0.2.2.post2
+ghostscript

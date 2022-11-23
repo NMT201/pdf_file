@@ -1,9 +1,9 @@
 freeglut3-dev 
 libgtk2.0-dev 
 libgl1
+python3-opencv
 ffmpeg 
 libsm6 
 libxext6 
 ghostscript 
 poppler-utils
-libgl

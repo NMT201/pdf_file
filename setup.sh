@@ -1,6 +1,4 @@
-apt-get update && apt-get install -y --no-install-recommends \
-    software-properties-common  build-essential freeglut3-dev libgtk2.0-dev libgl1-mesa-glx ffmpeg libsm6 libxext6 ghostscript poppler-utils\
-    
+  
 mkdir -p ~/.streamlit/
 
 echo "\

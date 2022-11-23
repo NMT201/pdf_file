@@ -6,3 +6,4 @@ libsm6
 libxext6 
 ghostscript 
 poppler-utils
+libgl1

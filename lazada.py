@@ -1,9 +1,8 @@
-import glob
-import cv2
+import re
 import numpy as np
 import pandas as pd
 from paddleocr import PaddleOCR
-from pdf2image import convert_from_bytes
+from pdf2image import convert_from_bytes, convert_from_path
 
 def lazada(pdf_file, df_day_du):
     ocr = PaddleOCR(use_gpu=True, show_log=False) # The model file will be downloaded automatically when executed for the first time
@@ -21,8 +20,8 @@ def lazada(pdf_file, df_day_du):
         result = ocr.ocr(image)
         so_don = ''
         for line in result[0]:
-            text = line[1]
-            if 'sodon' in text[0].lower():
+            text = re.sub('\W+', '', line[1]).lower()
+            if 'sodon' in text[0]:
                 so_don = text[0].split(':')[-1]
                 break
         if so_don != '':
@@ -35,3 +34,8 @@ def lazada(pdf_file, df_day_du):
     
     return pd.DataFrame(result_dict)
 
+if __name__ == '__main__':
+    from lazada_list import lazada_list
+    
+    df = lazada_list(r"C:\Users\19522\Desktop\PDF\pdf_file_1\lazada_list.pdf")
+    lazada(r'C:\Users\19522\Desktop\PDF\pdf_file_1\lazada.pdf', df)

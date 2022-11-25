@@ -7,7 +7,7 @@ from pdf2image import convert_from_bytes, convert_from_path
 def lazada(pdf_file, df_day_du):
     ocr = PaddleOCR(use_gpu=True, show_log=False) # The model file will be downloaded automatically when executed for the first time
     
-    images = convert_from_bytes(pdf_file.read(), poppler_path=r'C:\Program Files (x86)\poppler-0.68.0\bin')
+    images = convert_from_bytes(pdf_file.read())#, poppler_path=r'C:\Program Files (x86)\poppler-0.68.0\bin')
     result_dict = {
         'Số đơn' : [],
         'Mã bắn vạch' : [],
@@ -15,14 +15,14 @@ def lazada(pdf_file, df_day_du):
         'Dòng máy' : []
     }
 
-    for i in images:
+    for idx, i in enumerate(images):
         image = np.array(i)
         result = ocr.ocr(image)
         so_don = ''
         for line in result[0]:
-            text = re.sub('\W+', '', line[1]).lower()
-            if 'sodon' in text[0]:
-                so_don = text[0].split(':')[-1]
+            text = re.sub('\W+', '', line[1][0]).lower()
+            if line[0][0][1] >= 220 and line[0][0][1] <= 250 and line[0][0][0] >= 380 and line[0][0][0] <= 420:
+                so_don = text.split('don')[-1]
                 break
         if so_don != '':
             for i in range(len(df_day_du['Số đơn'])):

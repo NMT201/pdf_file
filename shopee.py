@@ -6,7 +6,7 @@ from PyPDF2 import PdfReader
 
 
 def shopee(pdf_file, df_day_du):
-    reader = PdfReader(pdf_file.read())
+    reader = PdfReader(pdf_file)
     result_dict = {
         'Mã vận đơn' : [],
         'Mã đơn hàng' : [],

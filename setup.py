@@ -1,13 +1,15 @@
 import sys
 from cx_Freeze import setup, Executable
-exe = Executable(
-    script=r"run.py",
-    base="Win32GUI",
-    )
+
+# Dependencies are automatically detected, but it might need fine tuning.
+# "packages": ["os"] is used as example only
+build_exe_options = {"packages": ["subprocess"]}
+
+# base="Win32GUI" should be used only for Windows GUI app
 
 setup(
-    name = "TESTApp",
-    version = "0.1",
-    description = "An example",
-    executables = [exe]
-    )
+    name="app",
+    version="0.1",
+    description="My GUI application!",
+    executables=[Executable("run.py", target_name='',base="Win32GUI")],
+)

@@ -14,7 +14,8 @@ def lazada_list(pdf_file):
         'Số đơn' : [],
         'Mã bắn vạch' : [],
         'Mã sản phẩm' : [],
-        'Dòng máy' : []
+        'Dòng máy' : [],
+        'Tên sản phẩm' : []
     }
 
     for n, page in enumerate(reader.pages[:]):
@@ -48,6 +49,7 @@ def lazada_list(pdf_file):
         
         list_dong_may = []
         list_msp = []
+        list_tsp = []
         
         idx_dong_may = []
         idx_msp = []
@@ -70,9 +72,13 @@ def lazada_list(pdf_file):
         for i in range(len(idx_dong_may)):
             dong_may = 'null'
             msp = 'null'
+            tsp = 'null'
             if idx_dong_may[i] != -1 and idx_msp[i] != -1:
                 if idx_dong_may[i][0] < idx_msp[i][0]:
+                    tsp = merge_tsp[i].split(idx_dong_may[i][1])[0][1:] 
+                    
                     dong_may = merge_tsp[i].split(idx_dong_may[i][1])[-1].split(',')[0]
+                    
                     msp =  merge_tsp[i].split(idx_msp[i][1])[-1].split(' ')[0][:-1]
                     if msp.isalpha() or not msp[0].isalpha():
                         msp = merge_tsp[i].split(idx_dong_may[i][1])[0]
@@ -86,9 +92,10 @@ def lazada_list(pdf_file):
                                     msp += n
                                     break
                 else:
+                    tsp = merge_tsp[i].split(idx_msp[i][1])[0][1:] 
+                    
                     dong_may = merge_tsp[i].replace('pro max', 'promax1 ').split(idx_dong_may[i][1])[-1].split(' ')
                     dong_may = ''.join(dong_may)
-          
                     
                     msp = merge_tsp[i].split(idx_msp[i][1])[-1].split(',')[0]
                     maybe_msp = re.sub('\W+', ' ', msp).split()
@@ -109,11 +116,13 @@ def lazada_list(pdf_file):
                         if t[-1][0].isalpha() and not t[-1].isalpha():
                             msp = t[-1]
             elif idx_dong_may[i] != -1:
+                tsp = merge_tsp[i].split(idx_dong_may[i][1])[0][1:] 
                 dong_may = merge_tsp[i].split(idx_dong_may[i][1])[-1].split(' ')[0][:-1]
                 t = re.sub('\W+', ' ', merge_tsp[i].split(idx_dong_may[i][1])[0]).split()
                 if t[-1][0].isalpha() and not t[-1].isalpha():
                     msp =  t[-1]
             elif idx_msp[i] != 1:
+                tsp = merge_tsp[i].split(idx_msp[i][1])[0][1:] 
                 msp = merge_tsp[i].split(idx_msp[i][1])[-1]
                 if 'ngẫu nhiên' in msp.lower():
                     msp = 'null'
@@ -138,19 +147,17 @@ def lazada_list(pdf_file):
                             else:
                                 dong_may = dong_may[:idx_before_last_num+1]
                     
-                
             list_dong_may.append(dong_may)
             list_msp.append(msp)
-            
-        # 
-
+            list_tsp.append(tsp)
         
         result_dict['Số đơn'] += [so_don] * len(list_msp)
         result_dict['Mã bắn vạch'] += [ma_ban_vach] * len(list_msp)
         result_dict['Mã sản phẩm'] += list_msp
         result_dict['Dòng máy'] += list_dong_may
+        result_dict['Tên sản phẩm'] += list_tsp
 
     return result_dict
 
 if __name__ == '__main__':
-    lazada_list(r'pdf_file\lazada_list.pdf').to_excel('output.xlsx')
+    lazada_list('pdf_file_1\lazada_list.pdf')

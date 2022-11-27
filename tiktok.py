@@ -25,7 +25,7 @@ def get_msp(s):
     return s
 
 def tiktok(pdf_file):
-    images = convert_from_bytes(pdf_file.read(), poppler_path=r'C:\Program Files (x86)\poppler-0.68.0\bin')
+    images = convert_from_bytes(pdf_file.read())#, poppler_path=r'C:\Program Files (x86)\poppler-0.68.0\bin')
     ocr = PaddleOCR(show_log=False)
     reader = PdfReader(pdf_file)
     result_dict = {
@@ -68,6 +68,7 @@ def tiktok(pdf_file):
         # print(one_num_idxes)
         for num_idx in one_num_idxes:
             temp_tsp = list_tsp[prev:num_idx]
+            print(temp_tsp)
             # file.write(str(n+1) + str(temp_tsp) + '\n')
             tsp_merge.append(temp_tsp)
             prev=num_idx

@@ -2,6 +2,7 @@ from PyPDF2 import PdfReader, PdfFileWriter
 import json
 import re
 import camelot
+import os
 
 ignore_list = ['Salework', 'salework', 'THÔNG TIN', 'Ngày đặt hàng', 'Đơn vị vận chuyển', 'Tên khách hàng', 'SĐT', 'Địa chỉ', 'Ghi chú khách hàng', 'STT', 
                'Tên Sản phẩm', 'Phân loại', 'Số lượng', 'Thành tiền', 'Thông tin', 'Lưu ý:']
@@ -9,61 +10,25 @@ ignore_list = ['Salework', 'salework', 'THÔNG TIN', 'Ngày đặt hàng', 'Đơ
 ignore_msp = ['max', 'pro', 'xs', 'plus', 'se', 'iphone']
 
 
-def remove_last(s, rmv):
-    if s.endswith(rmv):
-       s = s[:s.rindex(rmv)]
-    return s
-def repeats(string):
-    for x in range(3, len(string)):
-        substring = string[:x]
-
-        if substring == string[x:x+len(substring)]:
-            return substring
-def get_msp(str):
-    if not str.isalpha():
-        if str[0].isalpha():
-            if repeats(str) is not None:
-                if str[-1] == 'a':
-                    return repeats(str)+'a'
-                elif str[-1] == 'b':
-                    return repeats(str)+'b'
-                elif str[-1] == 'c':
-                    return repeats(str)+'c'
-                else:
-                    return repeats(str)
-            else:
-                prev_char = ''
-                for idx, i in  enumerate(list(str)):
-                    if i.isalpha() and prev_char.isdigit():
-                        res = str[:idx]
-                        if str[-1] == 'a':
-                            return res + 'a' 
-                        elif str[-1] == 'b':
-                            return res +'b'
-                        elif str[-1] == 'c':
-                            return res +'c'
-                        else:
-                            return res
-                    prev_char = i
-                return str
-    return 'null'
 result_dict = {
     'Mã vận đơn' : [],
     'Mã đơn hàng' : [],
     'Mã sản phẩm' : [],
-    'Dòng máy' : []
+    'Dòng máy' : [],
+    'Tên sản phẩm' : []
 }
 def shopee_list(pdf_file):
     reader = PdfReader(pdf_file)
     pdf_writer = PdfFileWriter()
-    pdf_out = open('shopee.pdf', 'wb')
+    pdf_out = open(r'data\shopee.pdf', 'wb')
     for pagenum in range(reader.numPages):
         page = reader.getPage(pagenum)
         pdf_writer.addPage(page)
         pdf_writer.write(pdf_out)
     pdf_out.close()
-    print('Saved pdf')
-    tables = camelot.read_pdf('shopee.pdf', pages='all')
+
+    tables = camelot.read_pdf(r'data\shopee.pdf', pages='all')
+    os.remove(r'data\shopee.pdf')
     for n, page in enumerate(reader.pages):
         list_text = page.extract_text().split('\n')
         list_tsp = list_text.copy()
@@ -86,6 +51,7 @@ def shopee_list(pdf_file):
                 temp = []
         list_msp = []
         list_dong_may = []
+        list_tsp_right = []
         table = tables[n]
         for index, row in table.df.iterrows():
             
@@ -122,14 +88,16 @@ def shopee_list(pdf_file):
                                 break
             if msp in 'ngẫu nhiên':
                 msp = 'null'
+            list_tsp_right.append(row[1])
             list_msp.append(msp)
             list_dong_may.append(dong_may)
                 
-        result_dict['Mã vận đơn'] += [ma_van_don]*len(list_msp)
-        result_dict['Mã đơn hàng'] += [ma_don_hang]*len(list_msp)
+        result_dict['Mã đơn hàng'] += [ma_van_don]*len(list_msp)
+        result_dict['Mã vận đơn'] += [ma_don_hang]*len(list_msp)
         result_dict['Mã sản phẩm'] += list_msp
         result_dict['Dòng máy'] += list_dong_may
-    with open('shopee_list.json', 'w+', encoding='utf-8') as file:
+        result_dict['Tên sản phẩm'] += list_tsp_right
+    with open(r'data\shopee_list.json', 'w+', encoding='utf-8') as file:
         json.dump(result_dict, file)
 if __name__ == '__main__':
     shopee_list(r'pdf_file\shopee.pdf').to_excel('output.xlsx')

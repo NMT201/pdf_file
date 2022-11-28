@@ -25,7 +25,7 @@ def get_msp(s):
     return s
 
 def tiktok(pdf_file):
-    images = convert_from_bytes(pdf_file.read(), poppler_path=r'C:\Program Files (x86)\poppler-0.68.0\bin')
+    images = convert_from_bytes(pdf_file.read())#, poppler_path=r'C:\Program Files (x86)\poppler-0.68.0\bin')
     ocr = PaddleOCR(show_log=False)
     reader = PdfReader(pdf_file)
     result_dict = {
@@ -65,11 +65,10 @@ def tiktok(pdf_file):
         prev = 0
         list_msp = []
         list_dong_may = []
-        # print(one_num_idxes)
+        list_so_luong = []
+
         for num_idx in one_num_idxes:
             temp_tsp = list_tsp[prev:num_idx]
-            print(temp_tsp)
-            # file.write(str(n+1) + str(temp_tsp) + '\n')
             tsp_merge.append(temp_tsp)
             prev=num_idx
             dong_may = 'null'
@@ -85,7 +84,8 @@ def tiktok(pdf_file):
                         dong_may = temp_tsp[-2].split(',')[-1] + dong_may
                 elif ',' in temp_tsp[-2]:
                     dong_may = temp_tsp[-2].split(',')[-1] + dong_may
-            list_dong_may.append(dong_may)
+            list_so_luong.append(int(list_tsp[num_idx]))
+            list_dong_may += [dong_may]*int(list_tsp[num_idx])
         list_maybe_msp = []
         for tsp in tsp_merge:
             maybe_msp = []
@@ -156,7 +156,7 @@ def tiktok(pdf_file):
                     
                     
                 
-            list_msp.append(msp)
+            list_msp += [msp]*list_so_luong[idx_m]
 
 
         result_dict['Mã đơn'] += [str(ma_don)]*len(list_dong_may)

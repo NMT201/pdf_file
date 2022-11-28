@@ -9,7 +9,6 @@ ignore_list = ['Salework', 'salework', 'THÔNG TIN', 'Ngày đặt hàng', 'Đơ
 
 ignore_msp = ['max', 'pro', 'xs', 'plus', 'se', 'iphone']
 
-
 result_dict = {
     'Mã vận đơn' : [],
     'Mã đơn hàng' : [],
@@ -53,6 +52,10 @@ def shopee_list(pdf_file):
         list_dong_may = []
         list_tsp_right = []
         table = tables[n]
+        
+        with open(r'data\ignored_msp.json', 'r') as file:
+            null_msp = json.load(file)['Mã sản phẩm']
+        
         for index, row in table.df.iterrows():
             
             if row[0] == 'STT':
@@ -60,44 +63,103 @@ def shopee_list(pdf_file):
             # file.write(row[1].replace('\n', '') + '\n' + row[2].replace('\n', ' ') + '\n')
             msp = 'null'
             dong_may = 'null'
-            if ',' not in row[2]:
-                dong_may = row[2].replace('\n', ' ')
-                msp = re.sub('\W+', ' ', row[1]).split(' ')[-1]
-            else:
-                if len(row[2].split(',')[-1]) < 4:
-                    dong_may = ','.join(row[2].split(',')[1:]).replace('\n', '')
+            
+            if 'ngẫu nhiên' not in row[2]:
+                if ',' not in row[2]:
+                    dong_may = row[2].replace('\n', ' ')
+                    msp = re.sub('\W+', ' ', row[1]).split(' ')[-1]
+                    if msp in null_msp:
+                        msp = 'null'
                 else:
-                    dong_may = row[2].split(',')[-1].replace('\n', '')
-                maybe_msp = [re.sub('\W+', ' ',row[1].replace('\n', ' ')).split(), re.sub('\W+', ' ',row[2].replace('\n', ' ')).split()]
-                if not maybe_msp[0][-1].isalpha() and maybe_msp[0][-1][0].isalpha():
-                    for i in maybe_msp[1]:
-                        if i in 'abc':
-                            msp = maybe_msp[0][-1] + i
-                            break
-                        else:
-                            msp = maybe_msp[0][-1]
-                            for c in 'abc':
-                                if msp + c in row[2]:
-                                    msp += c
-                                    break
-                if msp == 'null' or msp == 'se2020':
+                    if len(row[2].split(',')[-1]) < 4:
+                        dong_may = ','.join(row[2].split(',')[1:]).replace('\n', '')
+                    else:
+                        dong_may = row[2].split(',')[-1].replace('\n', '')
+                    maybe_msp = [re.sub('\W+', ' ',row[1].replace('\n', ' ')).split(), re.sub('\W+', ' ',row[2].replace('\n', ' ')).split()]
                     for i in maybe_msp[1]:
                         if not i.isalpha():
                             if i[0].isalpha():
                                 msp = i
                                 break
-            if msp in 'ngẫu nhiên':
+                    if msp == 'null':
+                        if maybe_msp[0][-1] not in null_msp:
+                            if not maybe_msp[0][-1].isalpha() and maybe_msp[0][-1][0].isalpha():
+                                for i in maybe_msp[1]:
+                                    if i in 'abc':
+                                        msp = maybe_msp[0][-1] + i
+                                        break
+                                    else:
+                                        msp = maybe_msp[0][-1]
+                                        for c in 'abc':
+                                            if msp + c in row[2]:
+                                                msp += c
+                                                break
+            else:
+                if ',' not in row[2]:
+                    dong_may = row[2].replace('\n', ' ')
+                else:
+                    if len(row[2].split(',')[-1]) < 4:
+                        dong_may = ','.join(row[2].split(',')[1:]).replace('\n', '')
+                    else:
+                        dong_may = row[2].split(',')[-1].replace('\n', '')
+            # if ',' not in row[2]:
+            #     dong_may = row[2].replace('\n', ' ')
+            #     if 'ngẫu nhiên' in row[2]:
+            #         msp = 'null'
+            #     else:
+            #         msp = re.sub('\W+', ' ', row[1]).split(' ')[-1]
+            #         if msp in null_msp:
+            #             msp = 'null'
+            # if msp == 'null':
+            #     if len(row[2].split(',')[-1]) < 4:
+            #         dong_may = ','.join(row[2].split(',')[1:]).replace('\n', '')
+            #     else:
+            #         dong_may = row[2].split(',')[-1].replace('\n', '')
+            #     maybe_msp = [re.sub('\W+', ' ',row[1].replace('\n', ' ')).split(), re.sub('\W+', ' ',row[2].replace('\n', ' ')).split()]
+            #     if not maybe_msp[0][-1].isalpha() and maybe_msp[0][-1][0].isalpha():
+            #         for i in maybe_msp[1]:
+            #             if i in 'abc':
+            #                 msp = maybe_msp[0][-1] + i
+            #                 break
+            #             else:
+            #                 msp = maybe_msp[0][-1]
+            #                 for c in 'abc':
+            #                     if msp + c in row[2]:
+            #                         msp += c
+            #                         break
+            #     if msp == 'null' or msp == 'se2020':
+            #         for i in maybe_msp[1]:
+            #             if not i.isalpha():
+            #                 if i[0].isalpha():
+            #                     msp = i
+            #                     break
+            if msp in null_msp:
                 msp = 'null'
-            list_tsp_right.append(row[1])
-            list_msp.append(msp)
-            list_dong_may.append(dong_may)
+                
+            so_luong = int(row[3])
+            
+            list_tsp_right += [row[1]] * so_luong
+            list_msp += [msp] * so_luong
+            list_dong_may += [dong_may] * so_luong
                 
         result_dict['Mã đơn hàng'] += [ma_van_don]*len(list_msp)
         result_dict['Mã vận đơn'] += [ma_don_hang]*len(list_msp)
         result_dict['Mã sản phẩm'] += list_msp
         result_dict['Dòng máy'] += list_dong_may
         result_dict['Tên sản phẩm'] += list_tsp_right
-    with open(r'data\shopee_list.json', 'w+', encoding='utf-8') as file:
-        json.dump(result_dict, file)
+    if not os.path.exists(r'data\shopee_list.json'):
+        with open(r'data\shopee_list.json', 'w+', encoding='utf-8') as file:
+            json.dump(result_dict, file)
+    else:
+        with open(r'data\shopee_list.json', 'r', encoding='utf-8') as file:
+            exists_data = json.load(file)
+            exists_data['Mã đơn hàng'] += result_dict['Mã đơn hàng']
+            exists_data['Mã vận đơn'] += result_dict['Mã vận đơn']
+            exists_data['Mã sản phẩm'] += result_dict['Mã sản phẩm']
+            exists_data['Dòng máy'] += result_dict['Dòng máy']
+            exists_data['Tên sản phẩm'] += result_dict['Tên sản phẩm']
+        with open(r'data\shopee_list.json', 'w', encoding='utf-8') as file:
+            json.dump(exists_data, file)
+            
 if __name__ == '__main__':
     shopee_list(r'pdf_file\shopee.pdf').to_excel('output.xlsx')

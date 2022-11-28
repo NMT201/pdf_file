@@ -1,6 +1,9 @@
 import pandas as pd
 from PyPDF2 import PdfReader
+
+import os
 import re
+import json
 
 ignore_list = ['Salework', 'salework', 'THÔNG TIN', 'Ngày đặt hàng', 'Đơn vị vận chuyển', 'Tên khách hàng', 'SĐT', 'Địa chỉ', 'Ghi chú khách hàng', 'STT', 
             'Tên Sản phẩm', 'Phân loại', 'Số lượng', 'Thành tiền', 'Thông tin']
@@ -17,7 +20,8 @@ def lazada_list(pdf_file):
         'Dòng máy' : [],
         'Tên sản phẩm' : []
     }
-
+    with open(r'data\ignored_msp.json', 'r') as file:
+        null_msp = json.load(file)['Mã sản phẩm']
     for n, page in enumerate(reader.pages[:]):
         
         list_text = page.extract_text().split('\n')
@@ -73,6 +77,7 @@ def lazada_list(pdf_file):
             dong_may = 'null'
             msp = 'null'
             tsp = 'null'
+
             if idx_dong_may[i] != -1 and idx_msp[i] != -1:
                 if idx_dong_may[i][0] < idx_msp[i][0]:
                     tsp = merge_tsp[i].split(idx_dong_may[i][1])[0][1:] 
@@ -130,6 +135,7 @@ def lazada_list(pdf_file):
                     msp =  msp.split(' ')[0][:-1]
             if '.' in dong_may:
                 dong_may = dong_may.split('.')[0]
+            
             all_num_dm = re.findall('\d+', dong_may)
             if len(all_num_dm) > 0:
                 last_num = all_num_dm[-1]
@@ -146,7 +152,10 @@ def lazada_list(pdf_file):
                                 dong_may = dong_may[:idx_before_last_num+5]
                             else:
                                 dong_may = dong_may[:idx_before_last_num+1]
-                    
+            
+            if msp in null_msp:
+                msp = 'null'
+            
             list_dong_may.append(dong_may)
             list_msp.append(msp)
             list_tsp.append(tsp)
@@ -156,8 +165,20 @@ def lazada_list(pdf_file):
         result_dict['Mã sản phẩm'] += list_msp
         result_dict['Dòng máy'] += list_dong_may
         result_dict['Tên sản phẩm'] += list_tsp
-
-    return result_dict
+        
+    if not os.path.exists(r'data\lazada_list.json'):
+        with open(r'data\lazada_list.json', 'w+', encoding='utf-8') as file:
+            json.dump(result_dict, file)
+    else:
+        with open(r'data\lazada_list.json', 'r', encoding='utf-8') as file:
+            exists_data = json.load(file)
+            exists_data['Số đơn'] += result_dict['Số đơn']
+            exists_data['Mã bắn vạch'] += result_dict['Mã bắn vạch']
+            exists_data['Mã sản phẩm'] += result_dict['Mã sản phẩm']
+            exists_data['Dòng máy'] += result_dict['Dòng máy']
+            exists_data['Tên sản phẩm'] += result_dict['Tên sản phẩm']
+        with open(r'data\lazada_list.json', 'w', encoding='utf-8') as file:
+            json.dump(exists_data, file)
 
 if __name__ == '__main__':
     lazada_list('pdf_file_1\lazada_list.pdf')

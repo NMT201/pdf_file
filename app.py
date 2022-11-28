@@ -1,4 +1,10 @@
 
+import streamlit as st
+import pandas as pd
+import json
+import os
+import re
+
 from st_aggrid import AgGrid, GridOptionsBuilder
 from st_aggrid.shared import GridUpdateMode
 from streamlit_option_menu import option_menu
@@ -9,22 +15,22 @@ from lazada import lazada
 from tiktok import tiktok
 from shopee_list import shopee_list
 from shopee import shopee
-import streamlit as st
-import pandas as pd
-import json
-import os
+
 
 if not os.path.isdir('data'):
     os.makedirs('data')
 if not os.path.exists(r'data\extra_data.json'):
     with open(r'data\extra_data.json', 'a', encoding='utf-8') as file:
         json.dump({'Tên sản phẩm': [], 'Mã sản phẩm': []}, file)
+if not os.path.exists(r'data\ignored_msp.json'):
+    with open(r'data\ignored_msp.json', 'a', encoding='utf-8') as file:
+        json.dump({'Mã sản phẩm': []}, file)
 
 from st_aggrid import GridUpdateMode, DataReturnMode
 
 def show_table(shows, edit=False, title=''):
     gb = GridOptionsBuilder.from_dataframe(shows)
-    gb.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
+    gb.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True, editable=edit)
     gb.configure_side_bar()
     gridOptions = gb.build()
 
@@ -42,24 +48,9 @@ def show_table(shows, edit=False, title=''):
     )
     
     return response
-
-
-
-def button_update(data, df_day_du, df_don):
-    reload = False
-    for i in data.values:
-        if i[-1] != 'null':
-            so_don = i[0]
-            for j in range(len(df_day_du['Số đơn'])):
-                if str(df_day_du['Số đơn'][j]) == so_don and df_day_du['Tên sản phẩm'][j] == i[2]:
-                    df_day_du['Số đơn'][j] = so_don
-                    df_day_du['Mã sản phẩm'][j] = str(i[-1])
-
-    df_don = lazada(df_don, df_day_du)
-    # show_table(df_don, title='💡Thông tin đơn đã được cập nhật bên dưới')
     
 with st.sidebar:
-    selected = option_menu("Main Menu", ["Shopee đầy đủ", 'Shopee', 'Lazada', 'Tiktok', 'Thêm mã sản phẩm'], default_index=1)
+    selected = option_menu("Main Menu", ["Shopee đầy đủ", 'Shopee', 'Lazada đầy đủ', 'Lazada', 'Tiktok', 'Thêm mã sản phẩm', 'Gán null'], default_index=1)
 
 if selected == 'Shopee đầy đủ':
     st.header("Shopee đầy đủ")
@@ -68,14 +59,18 @@ if selected == 'Shopee đầy đủ':
         key="1",
         help="'",
         type='pdf',
+        accept_multiple_files=True
     )
     if st.button('Xử lý'):
         if uploaded_file_day_du is not None:
-            shopee_list(uploaded_file_day_du)
-            uploaded_file_day_du.seek(0)
+            for u in uploaded_file_day_du:
+                shopee_list(u)
+            st.success('Thêm dữ liệu file đầy đủ thành công')
         else:
             st.stop()
-if selected == 'Shopee':
+    # if st.button('Xoá dữ liệu cũ'):
+        
+elif selected == 'Shopee':
     st.header("Shopee")
     uploaded_file = st.file_uploader(
         "File đơn shopee.",
@@ -91,20 +86,30 @@ if selected == 'Shopee':
                 df_day_du = json.load(open(r'data\shopee_list.json', 'r'))
                 shows = shopee(uploaded_file, df_day_du)
                 uploaded_file.seek(0)
-                show_table(shows, title='💡Thông tin đơn đã được trích xuất bên dưới', edit=True)
+                show_table(shows, title='💡Thông tin đơn đã được trích xuất bên dưới')
         else:
             st.stop()
-        
-elif selected == 'Lazada':
-    st.header("Lazada")
-
+            
+elif selected == 'Lazada đầy đủ':
+    st.header("Lazada đầy đủ")
     uploaded_file_day_du = st.file_uploader(
         "File lazada đầy đủ.",
         key="1",
         help="'",
         type='pdf',
-        
+        accept_multiple_files=True
     )
+    if st.button('Xử lý'):
+        if uploaded_file_day_du is not None:
+            for u in uploaded_file_day_du:
+                lazada_list(u)
+            st.success('Thêm dữ liệu file đầy đủ thành công')
+        else:
+            st.stop()            
+        
+elif selected == 'Lazada':
+    st.header("Lazada")
+    
     uploaded_file = st.file_uploader(
         "File đơn lazada.",
         key="2",
@@ -112,37 +117,14 @@ elif selected == 'Lazada':
         type='pdf'
     )
     if st.button('Xử lý'):
-        if uploaded_file is not None and uploaded_file_day_du is not None:
-            df_day_du = lazada_list(uploaded_file_day_du)
-            df_don, df_null = lazada(uploaded_file, df_day_du)
-            show_table(df_don, title='💡Thông tin đơn đã được trích xuất bên dưới')
-            # if len(df_null.index) > 0:
-            #     show_table(df_null, edit=True, title='Sản phẩm không tìm thấy mã')
-    #     if st.form_submit_button():
-    #         if uploaded_file is not None and uploaded_file_day_du is not None:
-    #             st.session_state.df_day_du = lazada_list(uploaded_file_day_du)
-    #             st.session_state.df_don, st.session_state.df_null = lazada(uploaded_file, st.session_state.df_day_du)
-    #             # show_table(df_don, title='💡Thông tin đơn đã được trích xuất bên dưới')
-    #             # if len(df_null.index) > 0:
-    #             #     st.session_state.response = show_table(df_null, edit=True, title='Thêm mã sản phẩm')
-    #                 # st.session_state.data = pd.DataFrame(df_show['data'])
-    #                 # st.button('Cập nhật', on_click=button_update, args=[data, df_day_du, df_don])
-    # show_table(st.session_state.df_don, title='💡Thông tin đơn đã được trích xuất bên dưới')
-    # if len(st.session_state.df_null.index) > 0:
-    #     response = show_table(st.session_state.df_null, edit=True, title='Thêm mã sản phẩm')
-    # if st.button
-    # button_update(response['data'], st.session_state.df_day_du, st.session_state.df_don)
-    # if st.button('Thống kê'):
-    
-        # if uploaded_file is not None and uploaded_file_day_du is not None:
-        #     df_day_du = lazada_list(uploaded_file_day_du)
-        #     df_don, df_null = lazada(uploaded_file, df_day_du)
-        #     show_table(df_don, title='💡Thông tin đơn đã được trích xuất bên dưới')
-        #     if len(df_null.index) > 0:
-        #         df_show = show_table(df_null, edit=True, title='Thêm mã sản phẩm')
-        #         data = pd.DataFrame(df_show['data'])
-        #         st.button('Cập nhật', on_click=button_update, args=[data, df_day_du, df_don])
-                    # show_table(df_null, edit=True, title='Thêm mã sản phẩm')
+        if not os.path.exists(r'data\lazada_list.json'):
+            st.warning('Chưa nhập file lazada đầy đủ')
+        else:
+            if uploaded_file is not None:
+                df_day_du = json.load(open(r'data\lazada_list.json', 'r'))
+                df_don, df_null = lazada(uploaded_file, df_day_du)
+                show_table(df_don, title='💡Thông tin đơn đã được trích xuất bên dưới')
+            
             
 elif selected == 'Tiktok':
     st.header("Tiktok")
@@ -159,28 +141,43 @@ elif selected == 'Tiktok':
             show_table(shows)
         else:
             st.stop()
+            
 elif selected == 'Thêm mã sản phẩm':
     tsp = st.text_input('Tên sản phẩm')
     msp = st.text_input('Mã sản phẩm')
+    with open(r'data\extra_data.json', 'r', encoding='utf-8') as file:  
+        extra_data = json.load(file)
     if st.button('Thêm'):
-        import json
-        if os.path.exists(r'data\extra_data.json'):
-            file =  open(r'data\extra_data.json', 'r', encoding='utf-8')
-            d = json.load(file)
-            d['Tên sản phẩm'].append(tsp)
-            d['Mã sản phẩm'].append(msp)
-            file.close()
-            file =  open(r'data\extra_data.json', 'w', encoding='utf-8')
-            json.dump(d, file)
-            file.close()
-        else:
-            d = {
-                'Tên sản phẩm' : [tsp],
-                'Mã sản phẩm' : [msp]
+        extra_data['Tên sản phẩm'].append(tsp)
+        extra_data['Mã sản phẩm'].append(msp)
+        with open(r'data\extra_data.json', 'w', encoding='utf-8') as file:
+            json.dump(extra_data, file)
+        
+    extra_data_df = show_table(pd.DataFrame(extra_data), edit=True, title='Danh sách đã thêm')['data']
+
+    if extra_data_df['Mã sản phẩm'].to_list() != extra_data['Mã sản phẩm'] or extra_data_df['Tên sản phẩm'].to_list() != extra_data['Tên sản phẩm']:
+        extra_data = {
+            'Tên sản phẩm': list(set([i for i in extra_data_df['Tên sản phẩm'].to_list() if i != ''])),
+            'Mã sản phẩm': list(set([i for i in extra_data_df['Mã sản phẩm'].to_list() if i != '']))
             }
-            file =  open(r'data\extra_data.json', 'w+', encoding='utf-8')
-            json.dump(d, file)
-            file.close()
-
+        with open('data\extra_data.json', 'w', encoding='utf-8') as file:
+            json.dump(extra_data, file)         
     
+elif selected == 'Gán null':
+    msp = st.text_input('Thêm một hoặc nhiều mã sản phẩm ngăn cách nhau bằng dấu phẩy')
+    list_msp = [re.sub('\W+', '', i) for i in msp.split(',')]
+    with open('data\ignored_msp.json', 'r', encoding='utf-8') as file:
+        ignored_msp = json.load(file)
+    if st.button('Thêm') and msp is not None:
+        ignored_msp['Mã sản phẩm'] += list_msp 
+        ignored_msp['Mã sản phẩm'] = list(set(ignored_msp['Mã sản phẩm']))
+        with open('data\ignored_msp.json', 'w', encoding='utf-8') as file:
+            json.dump(ignored_msp, file)
+        st.success('Đã thêm thành công')
+    
+    ignored_msp_df = show_table(pd.DataFrame(ignored_msp), edit=True, title='Danh sách mã sản phẩm đã thêm')['data']
 
+    if ignored_msp_df['Mã sản phẩm'].to_list() != ignored_msp['Mã sản phẩm']:
+        ignored_msp = ignored_msp_df['Mã sản phẩm'].to_list()
+        with open('data\ignored_msp.json', 'w', encoding='utf-8') as file:
+            json.dump({'Mã sản phẩm': [i for i in ignored_msp if i != '']}, file)

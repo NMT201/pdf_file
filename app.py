@@ -16,6 +16,9 @@ import os
 
 if not os.path.isdir('data'):
     os.makedirs('data')
+if not os.path.exists(r'data\extra_data.json'):
+    with open(r'data\extra_data.json', 'a', encoding='utf-8') as file:
+        json.dump({'Tên sản phẩm': [], 'Mã sản phẩm': []}, file)
 
 from st_aggrid import GridUpdateMode, DataReturnMode
 

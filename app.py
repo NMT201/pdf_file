@@ -50,7 +50,7 @@ def show_table(shows, edit=False, title=''):
     return response
     
 with st.sidebar:
-    selected = option_menu("Main Menu", ["Shopee đầy đủ", 'Shopee', 'Lazada đầy đủ', 'Lazada', 'Tiktok', 'Thêm mã sản phẩm', 'Gán null'], default_index=1)
+    selected = option_menu("Main Menu", ["Shopee đầy đủ", 'Shopee', 'Lazada đầy đủ', 'Lazada', 'Tiktok', 'Thêm mã sản phẩm', 'Gán null', 'Xoá dữ liệu'], default_index=1)
 
 if selected == 'Shopee đầy đủ':
     st.header("Shopee đầy đủ")
@@ -68,7 +68,7 @@ if selected == 'Shopee đầy đủ':
             st.success('Thêm dữ liệu file đầy đủ thành công')
         else:
             st.stop()
-    # if st.button('Xoá dữ liệu cũ'):
+    
         
 elif selected == 'Shopee':
     st.header("Shopee")
@@ -181,3 +181,13 @@ elif selected == 'Gán null':
         ignored_msp = ignored_msp_df['Mã sản phẩm'].to_list()
         with open('data\ignored_msp.json', 'w', encoding='utf-8') as file:
             json.dump({'Mã sản phẩm': [i for i in ignored_msp if i != '']}, file)
+
+elif selected == 'Xoá dữ liệu':
+    if os.path.exists(r'data\shopee_list.json'):
+        if st.button('Xoá dữ liệu file shopee đầy đủ'):
+            os.remove(r'data\shopee_list.json')
+            st.experimental_rerun()
+    if os.path.exists(r'data\lazada_list.json'):
+        if st.button('Xoá dữ liệu file lazada đầy đủ'):
+            os.remove(r'data\lazada_list.json')
+            st.experimental_rerun()

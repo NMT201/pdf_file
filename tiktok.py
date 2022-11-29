@@ -1,5 +1,6 @@
 import pandas as pd
 import re
+import json
 import numpy as np
 from PyPDF2 import PdfReader
 from paddleocr import PaddleOCR
@@ -34,6 +35,8 @@ def tiktok(pdf_file):
         'Mã sản phẩm' : [],
         'Dòng máy' : []
     }
+    with open(r'data\ignored_msp.json', 'r') as file:
+        null_msp = json.load(file)['Mã sản phẩm']
 
     ma_ban_vach = ''
     for n, page in enumerate(reader.pages[:]):
@@ -154,7 +157,8 @@ def tiktok(pdf_file):
                     msp = get_msp(msp)                
                     break
                     
-                    
+            if msp in null_msp:
+                msp = 'null'
                 
             list_msp += [msp]*list_so_luong[idx_m]
 

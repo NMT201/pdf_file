@@ -133,7 +133,7 @@ def shopee_list(pdf_file):
             #                 if i[0].isalpha():
             #                     msp = i
             #                     break
-            if msp in null_msp:
+            if msp.lower() in null_msp:
                 msp = 'null'
                 
             so_luong = int(row[3])

@@ -154,7 +154,7 @@ def lazada_list(pdf_file):
                             else:
                                 dong_may = dong_may[:idx_before_last_num+1]
             
-            if msp in null_msp:
+            if msp.lower() in null_msp:
                 msp = 'null'
             
             list_dong_may.append(dong_may)

@@ -157,7 +157,7 @@ def tiktok(pdf_file):
                     msp = get_msp(msp)                
                     break
                     
-            if msp in null_msp:
+            if msp.lower() in null_msp:
                 msp = 'null'
                 
             list_msp += [msp]*list_so_luong[idx_m]

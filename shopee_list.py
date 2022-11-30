@@ -153,13 +153,14 @@ def shopee_list(pdf_file):
     else:
         with open(r'data\shopee_list.json', 'r', encoding='utf-8') as file:
             exists_data = json.load(file)
-            exists_data['Mã đơn hàng'] += result_dict['Mã đơn hàng']
-            exists_data['Mã vận đơn'] += result_dict['Mã vận đơn']
-            exists_data['Mã sản phẩm'] += result_dict['Mã sản phẩm']
-            exists_data['Dòng máy'] += result_dict['Dòng máy']
-            exists_data['Tên sản phẩm'] += result_dict['Tên sản phẩm']
-        with open(r'data\shopee_list.json', 'w', encoding='utf-8') as file:
-            json.dump(exists_data, file)
+            if str(result_dict['Mã đơn hàng'])[1:-1] not in str(exists_data['Mã đơn hàng']):
+                exists_data['Mã đơn hàng'] += result_dict['Mã đơn hàng']
+                exists_data['Mã vận đơn'] += result_dict['Mã vận đơn']
+                exists_data['Mã sản phẩm'] += result_dict['Mã sản phẩm']
+                exists_data['Dòng máy'] += result_dict['Dòng máy']
+                exists_data['Tên sản phẩm'] += result_dict['Tên sản phẩm']
+                with open(r'data\shopee_list.json', 'w', encoding='utf-8') as file:
+                    json.dump(exists_data, file)
             
 if __name__ == '__main__':
     shopee_list(r'pdf_file\shopee.pdf').to_excel('output.xlsx')

@@ -11,6 +11,7 @@ ignore_list = ['Salework', 'salework', 'THÔNG TIN', 'Ngày đặt hàng', 'Đơ
 dong_may_sep = ['Iphone:', 'Dòng máy:', 'Variation1:', 'Dòng sản phẩm tương thích:', 'iphone:', 'iP ', 'MÃ MÁY :']
 msp_sep = ['Variation3:', 'KIỂU:', 'Nhóm Màu:', 'Màu:', 'Mẫu:']
 
+
 def lazada_list(pdf_file):
     reader = PdfReader(pdf_file)
     result_dict = {
@@ -172,13 +173,14 @@ def lazada_list(pdf_file):
     else:
         with open(r'data\lazada_list.json', 'r', encoding='utf-8') as file:
             exists_data = json.load(file)
-            exists_data['Số đơn'] += result_dict['Số đơn']
-            exists_data['Mã bắn vạch'] += result_dict['Mã bắn vạch']
-            exists_data['Mã sản phẩm'] += result_dict['Mã sản phẩm']
-            exists_data['Dòng máy'] += result_dict['Dòng máy']
-            exists_data['Tên sản phẩm'] += result_dict['Tên sản phẩm']
-        with open(r'data\lazada_list.json', 'w', encoding='utf-8') as file:
-            json.dump(exists_data, file)
+            if str(result_dict['Số đơn'])[1:-1] not in str(exists_data['Số đơn']):
+                exists_data['Số đơn'] += result_dict['Số đơn']
+                exists_data['Mã bắn vạch'] += result_dict['Mã bắn vạch']
+                exists_data['Mã sản phẩm'] += result_dict['Mã sản phẩm']
+                exists_data['Dòng máy'] += result_dict['Dòng máy']
+                exists_data['Tên sản phẩm'] += result_dict['Tên sản phẩm']
+                with open(r'data\lazada_list.json', 'w', encoding='utf-8') as file:
+                    json.dump(exists_data, file)
 
 if __name__ == '__main__':
     lazada_list('pdf_file_1\lazada_list.pdf')

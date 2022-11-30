@@ -165,7 +165,7 @@ elif selected == 'Thêm mã sản phẩm':
     
 elif selected == 'Gán null':
     msp = st.text_input('Thêm một hoặc nhiều mã sản phẩm ngăn cách nhau bằng dấu phẩy')
-    list_msp = [re.sub('\W+', '', i) for i in msp.split(',')]
+    list_msp = [re.sub('\W+', '', i.lower()) for i in msp.split(',')]
     with open('data\ignored_msp.json', 'r', encoding='utf-8') as file:
         ignored_msp = json.load(file)
     if st.button('Thêm') and msp is not None:

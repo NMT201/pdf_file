@@ -33,6 +33,7 @@ def shopee(pdf_file, df_day_du):
                             for j in range(len(extra_data['Tên sản phẩm'])):
                                 if difflib.SequenceMatcher(None,extra_data['Tên sản phẩm'][j] ,df_day_du['Tên sản phẩm'][a]).ratio() > 0.9: 
                                     msp = extra_data['Mã sản phẩm'][j]
+                        
                         result_dict['Mã vận đơn'].append(df_day_du['Mã vận đơn'][a])
                         result_dict['Mã đơn hàng'].append(ma_don_hang)
                         result_dict['Mã sản phẩm'].append(msp)

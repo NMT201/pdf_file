@@ -25,6 +25,9 @@ if not os.path.exists(r'data\extra_data.json'):
 if not os.path.exists(r'data\ignored_msp.json'):
     with open(r'data\ignored_msp.json', 'a', encoding='utf-8') as file:
         json.dump({'Mã sản phẩm': []}, file)
+if not os.path.exists(r'data\shopee_list_added_file.txt'):
+    file = open(r'data\shopee_list_added_file.txt', 'a', encoding='utf-8')
+    file.close()
 
 from st_aggrid import GridUpdateMode, DataReturnMode
 
@@ -61,11 +64,20 @@ if selected == 'Shopee đầy đủ':
         type='pdf',
         accept_multiple_files=True
     )
+    sp_added = open(r'data\shopee_list_added_file.txt', 'r')
+    added_file = sp_added.read().split(',')
+    sp_added.close()
     if st.button('Xử lý'):
         if uploaded_file_day_du is not None:
             for u in uploaded_file_day_du:
-                shopee_list(u)
-            st.success('Thêm dữ liệu file đầy đủ thành công')
+                if u.name not in added_file:
+                    added_file.append(u.name)
+                    shopee_list(u)
+                    st.success('Thêm thành công file ' + u.name) 
+                else:
+                    st.warning('File ' + u.name + ' đã được thêm trước đó')
+            with open(r'data\shopee_list_added_file.txt', 'w') as file:
+                file.write(','.join(added_file))
         else:
             st.stop()
     
@@ -186,6 +198,7 @@ elif selected == 'Xoá dữ liệu':
     if os.path.exists(r'data\shopee_list.json'):
         if st.button('Xoá dữ liệu file shopee đầy đủ'):
             os.remove(r'data\shopee_list.json')
+            os.remove(r'data\shopee_list_added_file.txt')
             st.experimental_rerun()
     if os.path.exists(r'data\lazada_list.json'):
         if st.button('Xoá dữ liệu file lazada đầy đủ'):

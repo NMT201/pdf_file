@@ -74,8 +74,6 @@ if selected == 'Shopee đầy đủ':
                     added_file.append(u.name)
                     shopee_list(u)
                     st.success('Thêm thành công file ' + u.name) 
-                else:
-                    st.warning('File ' + u.name + ' đã được thêm trước đó')
             with open(r'data\shopee_list_added_file.txt', 'w') as file:
                 file.write(','.join(added_file))
         else:

@@ -28,11 +28,9 @@ def shopee_list(pdf_file):
     pdf_out.close()
 
     tables = camelot.read_pdf(r'data\shopee.pdf', pages='all')
-    print("Table : ", len(tables))
     tb_minus = 0
     os.remove(r'data\shopee.pdf')
     for n, page in enumerate(reader.pages):
-        print("page : ", str(n+1))
         list_text = page.extract_text().split('\n')
         list_tsp = list_text.copy()
         for text in list_text:

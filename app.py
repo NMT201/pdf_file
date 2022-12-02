@@ -74,7 +74,7 @@ if selected == 'Shopee đầy đủ':
                     added_file.append(u.name)
                     shopee_list(u)
                     st.success('Thêm thành công file ' + u.name) 
-            with open(r'data\shopee_list_added_file.txt', 'w') as file:
+            with open(r'data\shopee_list_added_file.txt', 'w', encoding='utf-8') as file:
                 file.write(','.join(added_file))
         else:
             st.stop()

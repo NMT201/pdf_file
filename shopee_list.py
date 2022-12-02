@@ -28,9 +28,11 @@ def shopee_list(pdf_file):
     pdf_out.close()
 
     tables = camelot.read_pdf(r'data\shopee.pdf', pages='all')
+    print("Table : ", len(tables))
     tb_minus = 0
     os.remove(r'data\shopee.pdf')
     for n, page in enumerate(reader.pages):
+        print("page : ", str(n+1))
         list_text = page.extract_text().split('\n')
         list_tsp = list_text.copy()
         for text in list_text:
@@ -65,8 +67,10 @@ def shopee_list(pdf_file):
         list_msp = []
         list_dong_may = []
         list_tsp_right = []
-        table = tables[n-tb_minus]
-        
+        try:
+            table = tables[n-tb_minus]
+        except IndexError:
+            continue
         with open(r'data\ignored_msp.json', 'r') as file:
             null_msp = json.load(file)['Mã sản phẩm']
         
@@ -131,7 +135,7 @@ def shopee_list(pdf_file):
         result_dict['Mã sản phẩm'] += list_msp
         result_dict['Dòng máy'] += list_dong_may
         result_dict['Tên sản phẩm'] += list_tsp_right
-    print(len(result_dict['Mã đơn hàng']))
+    # print(len(result_dict['Mã đơn hàng']))
     if not os.path.exists(r'data\shopee_list.json'):
         with open(r'data\shopee_list.json', 'w+', encoding='utf-8') as file:
             json.dump(result_dict, file)

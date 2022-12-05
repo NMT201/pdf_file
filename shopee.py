@@ -7,6 +7,9 @@ from PyPDF2 import PdfReader
 
 
 def shopee(pdf_file, df_day_du):
+    with open(r'data\ignored_msp.json', 'r') as file:
+        null_msp = json.load(file)['Mã sản phẩm']
+    print(null_msp)
     reader = PdfReader(pdf_file)
     result_dict = {
         'Mã vận đơn' : [],
@@ -33,7 +36,8 @@ def shopee(pdf_file, df_day_du):
                             for j in range(len(extra_data['Tên sản phẩm'])):
                                 if difflib.SequenceMatcher(None,extra_data['Tên sản phẩm'][j] ,df_day_du['Tên sản phẩm'][a]).ratio() > 0.9: 
                                     msp = extra_data['Mã sản phẩm'][j]
-                        
+                        if msp.lower() in null_msp:
+                            msp = 'null'
                         result_dict['Mã vận đơn'].append(df_day_du['Mã vận đơn'][a])
                         result_dict['Mã đơn hàng'].append(ma_don_hang)
                         result_dict['Mã sản phẩm'].append(msp)
@@ -48,9 +52,12 @@ def shopee(pdf_file, df_day_du):
                             for j in range(len(extra_data['Tên sản phẩm'])):
                                 if difflib.SequenceMatcher(None,extra_data['Tên sản phẩm'][j] ,df_day_du['Tên sản phẩm'][a]).ratio() > 0.9: 
                                     msp = extra_data['Mã sản phẩm'][j]
+                        if msp.lower() in null_msp:
+                            msp = 'null'
+                        
                         result_dict['Mã vận đơn'].append(df_day_du['Mã vận đơn'][a])
                         result_dict['Mã đơn hàng'].append(ma_don_hang)
-                        result_dict['Mã sản phẩm'].append(df_day_du['Mã sản phẩm'][a])
+                        result_dict['Mã sản phẩm'].append(msp)
                         result_dict['Dòng máy'].append(df_day_du['Dòng máy'][a])
                 break
             # break

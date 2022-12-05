@@ -26,7 +26,8 @@ def shopee_list(pdf_file):
         pdf_writer.addPage(page)
         pdf_writer.write(pdf_out)
     pdf_out.close()
-
+    with open(r'data\ignored_msp.json', 'r') as file:
+        null_msp = json.load(file)['Mã sản phẩm']
     
     tb_minus = 0
 
@@ -67,9 +68,8 @@ def shopee_list(pdf_file):
         list_tsp_right = []
 
         table = camelot.read_pdf(r'data\shopee.pdf', pages=str(n+1))
-
-        with open(r'data\ignored_msp.json', 'r') as file:
-            null_msp = json.load(file)['Mã sản phẩm']
+        
+        
         if len(table) > 0:
             for index, row in table[0].df.iterrows():
                 if row[0] == 'STT':

@@ -127,6 +127,8 @@ def shopee_list(pdf_file):
                 list_tsp_right += [row[1]] * so_luong
                 list_msp += [msp] * so_luong
                 list_dong_may += [dong_may] * so_luong
+        else:
+            continue
 
         
         result_dict['Mã đơn hàng'] += [ma_van_don]*len(list_msp)

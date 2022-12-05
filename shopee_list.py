@@ -72,9 +72,8 @@ def shopee_list(pdf_file):
             null_msp = json.load(file)['Mã sản phẩm']
         if len(table) > 0:
             for index, row in table[0].df.iterrows():
-                print(row)
                 if row[0] == 'STT':
-                    access_table = True
+                    continue
 
                 msp = 'null'
                 dong_may = 'null'
@@ -121,7 +120,6 @@ def shopee_list(pdf_file):
                     dong_may = 'null'
                 if msp.lower() in null_msp or len(msp) < 3:
                     msp = 'null'
-                print(list_msp, list_dong_may)
                 so_luong = int(row[3])
                 
                 list_tsp_right += [row[1]] * so_luong
@@ -136,7 +134,7 @@ def shopee_list(pdf_file):
         result_dict['Mã sản phẩm'] += list_msp
         result_dict['Dòng máy'] += list_dong_may
         result_dict['Tên sản phẩm'] += list_tsp_right
-    # print(len(result_dict['Mã đơn hàng']))
+
     if not os.path.exists(r'data\shopee_list.json'):
         with open(r'data\shopee_list.json', 'w+', encoding='utf-8') as file:
             json.dump(result_dict, file)

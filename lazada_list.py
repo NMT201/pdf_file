@@ -23,24 +23,27 @@ def lazada_list(pdf_file):
     }
     with open(r'data\ignored_msp.json', 'r') as file:
         null_msp = json.load(file)['Mã sản phẩm']
-    for n, page in enumerate(reader.pages[:]):
-        
+    
+    for n, page in enumerate(reader.pages):
         list_text = page.extract_text().split('\n')
         list_tsp = list_text.copy()
-        if 'Mã đơn hàng:' not in page.extract_text():
-            list_tsp = page.extract_text().split('\n')[1:-1]
-            list_tsp[0] = list_tsp[0].replace('https://stock.salework.net/orders ', '')
-            list_tsp = [' ', ' '] + list_tsp
-
-        else:
-            for idx, text in enumerate(list_text):
-                for ignore in ignore_list:
-                    if ignore in text:
-                        if text in list_tsp:
-                            list_tsp.remove(text)
-                        if ignore == 'Địa chỉ':
-                            list_tsp.remove(list_text[idx+1])
-                        break
+        if len(list_text) > 1:
+            if 'Mã đơn hàng:' not in page.extract_text():
+                list_tsp = page.extract_text().split('\n')[1:-1]
+                if len(list_tsp) > 0: 
+                    list_tsp[0] = list_tsp[0].replace('https://stock.salework.net/orders ', '')
+                    list_tsp = [' ', ' '] + list_tsp
+                else:
+                    continue
+            else:
+                for idx, text in enumerate(list_text):
+                    for ignore in ignore_list:
+                        if ignore in text:
+                            if text in list_tsp:
+                                list_tsp.remove(text)
+                            if ignore == 'Địa chỉ':
+                                list_tsp.remove(list_text[idx+1])
+                            break
         so_don = re.sub('\W+', '',list_tsp[0].replace('Mã đơn hàng:', '')) if list_tsp[0] != ' ' else result_dict['Số đơn'][-1]
         
         ma_ban_vach = re.sub('\W+', '',list_tsp[1]) if list_tsp[1] != ' ' else result_dict['Mã bắn vạch'][-1]

@@ -132,7 +132,7 @@ elif selected == 'Lazada':
         else:
             if uploaded_file is not None:
                 df_day_du = json.load(open(r'data\lazada_list.json', 'r'))
-                df_don, df_null = lazada(uploaded_file, df_day_du)
+                df_don = lazada(uploaded_file, df_day_du)
                 show_table(df_don, title='💡Thông tin đơn đã được trích xuất bên dưới')
             
             

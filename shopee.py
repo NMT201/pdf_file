@@ -9,7 +9,6 @@ from PyPDF2 import PdfReader
 def shopee(pdf_file, df_day_du):
     with open(r'data\ignored_msp.json', 'r') as file:
         null_msp = json.load(file)['Mã sản phẩm']
-    print(null_msp)
     reader = PdfReader(pdf_file)
     result_dict = {
         'Mã vận đơn' : [],

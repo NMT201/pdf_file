@@ -7,6 +7,8 @@ from paddleocr import PaddleOCR
 from pdf2image import convert_from_bytes, convert_from_path
 
 def lazada(pdf_file, df_day_du):
+    with open(r'data\ignored_msp.json', 'r') as file:
+        null_msp = json.load(file)['Mã sản phẩm']
     ocr = PaddleOCR(use_gpu=True, show_log=False) # The model file will be downloaded automatically when executed for the first time
     # images = convert_from_path(pdf_file)
     images = convert_from_bytes(pdf_file.read(), poppler_path=r'C:\Program Files (x86)\poppler-0.68.0\bin')
@@ -45,11 +47,13 @@ def lazada(pdf_file, df_day_du):
                         for j in range(len(extra_data['Tên sản phẩm'])):
                             if difflib.SequenceMatcher(None,extra_data['Tên sản phẩm'][j] ,df_day_du['Tên sản phẩm'][i]).ratio() > 0.9: 
                                 msp = extra_data['Mã sản phẩm'][j]
+                    if msp in null_msp:
+                        msp = 'null'
                     result_dict['Số đơn'].append(df_day_du['Số đơn'][i])
                     result_dict['Mã bắn vạch'].append(df_day_du['Mã bắn vạch'][i])
                     result_dict['Mã sản phẩm'].append(msp)
                     result_dict['Dòng máy'].append(df_day_du['Dòng máy'][i])
-    return pd.DataFrame(result_dict), pd.DataFrame(null_dict)
+    return pd.DataFrame(result_dict)
 
 if __name__ == '__main__':
     from lazada_list import lazada_list

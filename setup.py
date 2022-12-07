@@ -11,6 +11,6 @@ setup(
     version="0.1",
     description="My GUI application!",
     executables=[Executable("run.py", target_name='',base="Win32GUI")],
-    options = {'build_exe': {'include_files' : ['app.py', 'lazada_list.py', 'shopee_list.py', 'shopee.py', 'tiktok.py']
+    options = {'build_exe': {'include_files' : ['app.py', 'lazada_list.py', 'shopee_list.py', 'shopee.py', 'tiktok.py', 'lazada.py']
                              }}
 )

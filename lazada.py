@@ -11,7 +11,7 @@ def lazada(pdf_file, df_day_du):
         null_msp = json.load(file)['Mã sản phẩm']
     ocr = PaddleOCR(use_gpu=True, show_log=False) # The model file will be downloaded automatically when executed for the first time
     # images = convert_from_path(pdf_file)
-    images = convert_from_bytes(pdf_file.read(), poppler_path=r'C:\Program Files (x86)\poppler-0.68.0\bin')
+    images = convert_from_bytes(pdf_file.read())#, poppler_path=r'C:\Program Files (x86)\poppler-0.68.0\bin')
     result_dict = {
         'Số đơn' : [],
         'Mã bắn vạch' : [],

@@ -73,12 +73,17 @@ if selected == 'Shopee đầy đủ':
                 if u.name not in added_file:
                     added_file.append(u.name)
                     shopee_list(u)
-                    st.success('Thêm thành công file ' + u.name) 
+                
             with open(r'data\shopee_list_added_file.txt', 'w', encoding='utf-8') as file:
                 file.write(','.join(added_file))
+            st.success('Thêm thành công file shopee đầy đủ') 
+            
+            
         else:
             st.stop()
-    
+            
+    added_file = open(r'data\shopee_list_added_file.txt', 'r').read().split(',')
+    show_table(pd.DataFrame({'File_name' : added_file}), edit=True, title='Danh sách file đã thêm')
         
 elif selected == 'Shopee':
     st.header("Shopee")

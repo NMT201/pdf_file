@@ -3,6 +3,7 @@ import re
 import json
 import numpy as np
 import camelot
+from pyzbar.pyzbar import decode
 from PyPDF2 import PdfReader, PdfFileWriter
 from paddleocr import PaddleOCR
 from pdf2image import convert_from_bytes
@@ -51,8 +52,9 @@ def tiktok(pdf_file):
         ma_don = ''
         page_text = page.extract_text()
         if page_text == '':
-            image = images[n].crop((184, 204, 633, 310))
-            ma_ban_vach = ocr.ocr(np.array(image))[0][0][1][0]
+            image = images[n]
+            detectedBarcodes = decode(images[n])
+            ma_ban_vach = str(detectedBarcodes[0].data)[2:-1]
             continue
         
         list_msp = []

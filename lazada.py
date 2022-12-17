@@ -3,6 +3,7 @@ import json
 import difflib
 import numpy as np
 import pandas as pd
+from pyzbar.pyzbar import decode
 from pdf2image import convert_from_bytes, convert_from_path
 
 def lazada(pdf_file, df_day_du):
@@ -25,21 +26,14 @@ def lazada(pdf_file, df_day_du):
     }
 
     for idx, i in enumerate(images):
-        image = np.array(i.crop((395, 216, 619, 277)))
-        # import matplotlib.pyplot as plt
-        # plt.imshow(i)
-        # plt.show()
-        result = ocr.ocr(image)
-        so_don = ''
-        for line in result[0]:
-            text = re.sub('\W+', '', line[1][0]).lower()
-            if 'don' in text:
-                so_don = text.split('don')[-1]
-                break
+        ma_ban_vach = ''
+        detectedBarcodes = decode(i)
+        if len(detectedBarcodes) > 0:
+            ma_ban_vach = str(detectedBarcodes[0].data)[2:-1]
         extra_data = json.load(open(r'data\extra_data.json', 'r', encoding='utf-8'))
-        if so_don != '':
-            for i in range(len(df_day_du['Số đơn'])):
-                if str(df_day_du['Số đơn'][i]) == str(so_don).strip(' '):
+        if ma_ban_vach != '':
+            for i in range(len(df_day_du['Mã bắn vạch'])):
+                if str(df_day_du['Mã bắn vạch'][i]) == str(ma_ban_vach).strip(' '):
                     msp = df_day_du['Mã sản phẩm'][i]
                     if msp == 'null':
                         for j in range(len(extra_data['Tên sản phẩm'])):

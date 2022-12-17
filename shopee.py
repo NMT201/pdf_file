@@ -8,7 +8,7 @@ from pdf2image import convert_from_bytes
 
 
 def shopee(pdf_file, df_day_du):
-    images = convert_from_bytes(pdf_file.read())#, poppler_path=r'C:\Program Files (x86)\poppler-0.68.0\bin')
+    images = convert_from_bytes(pdf_file.read(), poppler_path=r'C:\Program Files (x86)\poppler-0.68.0\bin')
     with open(r'data\ignored_msp.json', 'r') as file:
         null_msp = json.load(file)['Mã sản phẩm']
     reader = PdfReader(pdf_file)

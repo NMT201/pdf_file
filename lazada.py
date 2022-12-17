@@ -3,13 +3,11 @@ import json
 import difflib
 import numpy as np
 import pandas as pd
-from paddleocr import PaddleOCR
 from pdf2image import convert_from_bytes, convert_from_path
 
 def lazada(pdf_file, df_day_du):
     with open(r'data\ignored_msp.json', 'r') as file:
         null_msp = json.load(file)['Mã sản phẩm']
-    ocr = PaddleOCR(use_gpu=True, show_log=False) # The model file will be downloaded automatically when executed for the first time
     # images = convert_from_path(pdf_file)
     images = convert_from_bytes(pdf_file.read(), poppler_path=r'C:\Program Files (x86)\poppler-0.68.0\bin')
     result_dict = {

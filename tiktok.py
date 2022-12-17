@@ -5,7 +5,6 @@ import numpy as np
 import camelot
 from pyzbar.pyzbar import decode
 from PyPDF2 import PdfReader, PdfFileWriter
-from paddleocr import PaddleOCR
 from pdf2image import convert_from_bytes
 
 def get_msp(s):
@@ -29,7 +28,6 @@ def get_msp(s):
 
 def tiktok(pdf_file):
     images = convert_from_bytes(pdf_file.read(), poppler_path=r'C:\Program Files (x86)\poppler-0.68.0\bin')
-    ocr = PaddleOCR(show_log=False)
     reader = PdfReader(pdf_file)
     pdf_writer = PdfFileWriter()
     pdf_out = open(r'data\tiktok.pdf', 'wb')

@@ -1,6 +1,4 @@
 opencv-contrib-python==4.5.5.62
-paddlepaddle==2.4.0
-paddleocr>=2.0.6
 camelot-py==0.10.1
 PyPDF2==2.11.1
 pandastable==0.13.0

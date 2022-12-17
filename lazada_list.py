@@ -8,8 +8,8 @@ import json
 ignore_list = ['Salework', 'salework', 'THÔNG TIN', 'Ngày đặt hàng', 'Đơn vị vận chuyển', 'Tên khách hàng', 'SĐT', 'Địa chỉ', 'Ghi chú khách hàng', 'STT', 
             'Tên Sản phẩm', 'Phân loại', 'Số lượng', 'Thành tiền', 'Thông tin']
 
-dong_may_sep = ['Iphone:', 'Dòng máy:', 'Variation1:', 'Dòng sản phẩm tương thích:', 'iphone:', 'iP ', 'MÃ MÁY :']
-msp_sep = ['Variation3:', 'KIỂU:', 'Nhóm Màu:', 'Màu:', 'Mẫu:']
+dong_may_sep = ['Compatibility by Model:' ,'Nhóm sản phẩm2:' ,'Loại iPhone:', 'Iphone:', 'Dòng máy:', 'Variation1:', 'Dòng sản phẩm tương thích:', 'iphone:', 'iP ', 'MÃ MÁY :']
+msp_sep = ['Color Family:' ,'Loại ốp:' ,'Variation3:', 'KIỂU:', 'Nhóm Màu:', 'Màu:', 'Mẫu:', 'mẫu:']
 
 
 def lazada_list(pdf_file):
@@ -101,6 +101,7 @@ def lazada_list(pdf_file):
                                     msp += n
                                     break
                 else:
+
                     tsp = merge_tsp[i].split(idx_msp[i][1])[0][1:] 
                     
                     dong_may = merge_tsp[i].replace('pro max', 'promax1 ').split(idx_dong_may[i][1])[-1].split(' ')
@@ -131,6 +132,7 @@ def lazada_list(pdf_file):
                 if t[-1][0].isalpha() and not t[-1].isalpha():
                     msp =  t[-1]
             elif idx_msp[i] != 1:
+                print(merge_tsp[i])
                 tsp = merge_tsp[i].split(idx_msp[i][1])[0][1:] 
                 msp = merge_tsp[i].split(idx_msp[i][1])[-1]
                 if 'ngẫu nhiên' in msp.lower():

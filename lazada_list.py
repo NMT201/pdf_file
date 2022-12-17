@@ -132,7 +132,6 @@ def lazada_list(pdf_file):
                 if t[-1][0].isalpha() and not t[-1].isalpha():
                     msp =  t[-1]
             elif idx_msp[i] != 1:
-                print(merge_tsp[i])
                 tsp = merge_tsp[i].split(idx_msp[i][1])[0][1:] 
                 msp = merge_tsp[i].split(idx_msp[i][1])[-1]
                 if 'ngẫu nhiên' in msp.lower():

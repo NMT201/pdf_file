@@ -7,7 +7,13 @@ from pyzbar.pyzbar import decode
 from PyPDF2 import PdfReader, PdfFileWriter
 from pdf2image import convert_from_bytes
 
-def get_msp(s):
+def check_msp(msp):
+    if not msp.isalpha():
+        if msp[0].isalpha():
+            return True
+    return False
+
+def get_msp(s, maybe_msp, list_dong_may):
     for idx, char in enumerate(s):
         if idx > 0 and idx < len(s)-1:
             if char.isdigit() and s[idx-1].isdigit() and s[idx+1].isalpha():
@@ -79,9 +85,8 @@ def tiktok(pdf_file):
                         maybe_msp = msp_dm.split(',')[0].split()
                         msp = 'null'
                         for m in maybe_msp:
-                            if not m.isalpha():
-                                if m[0].isalpha():
-                                    msp = m
+                            if check_msp(m):
+                                msp = m
                         if msp in null_msp:
                             msp = 'null'
                         list_msp.append(msp)
@@ -162,12 +167,7 @@ def tiktok(pdf_file):
                 for idx, text in enumerate(maybe_msp):
                     if ',' in text:
                         msp = text.split(',')[0]
-                        if not msp.isalpha():
-                            if msp[0].isalpha():
-                                pass
-                            else:
-                                msp = 'null'
-                        else:
+                        if check_msp(msp):
                             msp = 'null'
                         
                         for i in maybe_msp[idx+1:]:
@@ -193,8 +193,8 @@ def tiktok(pdf_file):
                             if int(check_num) > 5 and check_num in list_dong_may[idx_m]:
                                 msp = msp[:msp.rindex(check_num)]
                                 
-                    if msp != 'null' and msp != get_msp(msp):
-                        msp = get_msp(msp)                
+                    if msp != 'null' and msp != get_msp(msp, maybe_msp, list_dong_may):
+                        msp = get_msp(msp, maybe_msp, list_dong_may)               
                         break
                         
                 if msp.lower() in null_msp:

@@ -10,7 +10,7 @@ def lazada(pdf_file, df_day_du):
     with open(r'data\ignored_msp.json', 'r') as file:
         null_msp = json.load(file)['Mã sản phẩm']
     # images = convert_from_path(pdf_file)
-    images = convert_from_bytes(pdf_file.read(), poppler_path=r'C:\Program Files (x86)\poppler-0.68.0\bin')
+    images = convert_from_bytes(pdf_file.read())#, poppler_path=r'C:\Program Files (x86)\poppler-0.68.0\bin')
     result_dict = {
         'Số đơn' : [],
         'Mã bắn vạch' : [],
@@ -27,7 +27,8 @@ def lazada(pdf_file, df_day_du):
 
     for idx, i in enumerate(images):
         ma_ban_vach = ''
-        detectedBarcodes = decode(i)
+        image = i.crop((0, 300, 3000, 600))
+        detectedBarcodes = decode(image)
         if len(detectedBarcodes) > 0:
             ma_ban_vach = str(detectedBarcodes[0].data)[2:-1]
         extra_data = json.load(open(r'data\extra_data.json', 'r', encoding='utf-8'))

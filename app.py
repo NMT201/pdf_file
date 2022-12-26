@@ -28,7 +28,10 @@ if not os.path.exists(r'data\ignored_msp.json'):
 if not os.path.exists(r'data\shopee_list_added_file.txt'):
     file = open(r'data\shopee_list_added_file.txt', 'a', encoding='utf-8')
     file.close()
-
+if not os.path.exists(r'data\lazada_list_added_file.txt'):
+    file = open(r'data\lazada_list_added_file.txt', 'a', encoding='utf-8')
+    file.close()
+    
 from st_aggrid import GridUpdateMode, DataReturnMode
 
 def show_table(shows, edit=False, title=''):
@@ -53,8 +56,11 @@ def show_table(shows, edit=False, title=''):
     return response
     
 with st.sidebar:
-    selected = option_menu("Main Menu", ["Shopee đầy đủ", 'Shopee', 'Lazada đầy đủ', 'Lazada', 'Tiktok', 'Thêm mã sản phẩm', 'Gán null', 'Xoá dữ liệu'], default_index=1)
+    selected = option_menu("Main Menu", ["Shopee đầy đủ", 'Shopee', 'Lazada đầy đủ', 'Lazada', 'Tiktok', 
+                                         'Thêm mã sản phẩm', 'Gán null', 'Danh sách dòng máy','Xoá dữ liệu'], 
+                           default_index=1)
 
+#! shopee đầy đủ
 if selected == 'Shopee đầy đủ':
     st.header("Shopee đầy đủ")
     uploaded_file_day_du = st.file_uploader(
@@ -84,7 +90,8 @@ if selected == 'Shopee đầy đủ':
             
     added_file = open(r'data\shopee_list_added_file.txt', 'r').read().split(',')
     show_table(pd.DataFrame({'File_name' : added_file}), edit=True, title='Danh sách file đã thêm')
-        
+    
+#! Shopee     
 elif selected == 'Shopee':
     st.header("Shopee")
     uploaded_file = st.file_uploader(
@@ -93,6 +100,7 @@ elif selected == 'Shopee':
         help=".",
         type='pdf'
     )
+    
     if st.button('Xử lý'):
         if uploaded_file is not None:
             if not os.path.exists(r'data\shopee_list.json'):
@@ -104,7 +112,8 @@ elif selected == 'Shopee':
                 show_table(shows, title='💡Thông tin đơn đã được trích xuất bên dưới')
         else:
             st.stop()
-            
+
+#! Lazada đầy đủ
 elif selected == 'Lazada đầy đủ':
     st.header("Lazada đầy đủ")
     uploaded_file_day_du = st.file_uploader(
@@ -114,14 +123,25 @@ elif selected == 'Lazada đầy đủ':
         type='pdf',
         accept_multiple_files=True
     )
+    
+    lzd_added = open(r'data\shopee_list_added_file.txt', 'r')
+    added_file = lzd_added.read().split(',')
+    lzd_added.close()
+    
     if st.button('Xử lý'):
         if uploaded_file_day_du is not None:
             for u in uploaded_file_day_du:
                 lazada_list(u)
             st.success('Thêm dữ liệu file đầy đủ thành công')
+            with open(r'data\lazada_list_added_file.txt', 'w', encoding='utf-8') as file:
+                file.write(','.join(added_file))
         else:
-            st.stop()            
-        
+            st.stop()         
+               
+    added_file = open(r'data\lazada_list_added_file.txt', 'r').read().split(',')
+    show_table(pd.DataFrame({'File_name' : added_file}), edit=True, title='Danh sách file đã thêm')
+
+#! Lazada
 elif selected == 'Lazada':
     st.header("Lazada")
     
@@ -140,7 +160,7 @@ elif selected == 'Lazada':
                 df_don = lazada(uploaded_file, df_day_du)
                 show_table(df_don, title='💡Thông tin đơn đã được trích xuất bên dưới')
             
-            
+#! tiktok   
 elif selected == 'Tiktok':
     st.header("Tiktok")
     uploaded_file = st.file_uploader(
@@ -156,7 +176,8 @@ elif selected == 'Tiktok':
             show_table(shows)
         else:
             st.stop()
-            
+
+#!  Thêm mã sản phẩm
 elif selected == 'Thêm mã sản phẩm':
     tsp = st.text_input('Tên sản phẩm')
     msp = st.text_input('Mã sản phẩm')
@@ -177,7 +198,8 @@ elif selected == 'Thêm mã sản phẩm':
             }
         with open('data\extra_data.json', 'w', encoding='utf-8') as file:
             json.dump(extra_data, file)         
-    
+
+#!  Gán null
 elif selected == 'Gán null':
     msp = st.text_input('Thêm một hoặc nhiều mã sản phẩm ngăn cách nhau bằng dấu phẩy')
     list_msp = [re.sub('\W+', '', i.lower()) for i in msp.split(',')]
@@ -197,6 +219,26 @@ elif selected == 'Gán null':
         with open('data\ignored_msp.json', 'w', encoding='utf-8') as file:
             json.dump({'Mã sản phẩm': [i for i in ignored_msp if i != '']}, file)
 
+#! Danh sách dòng máy
+elif selected == 'Danh sách dòng máy':
+    with open(r'data\dong_may.txt', 'r') as file:
+        list_dong_may_available = file.read().split('\n')
+    dm = st.text_input('Thêm một hoặc nhiều dòng máy ngăn cách nhau bằng dấu phẩy')
+    list_dm = [re.sub('\W+', '', i.lower()) for i in dm.split(',')]
+    if dm is not None and st.button('Thêm'):
+        list_dong_may_available += list_dm
+        list_dong_may_available = sorted(list(set(list_dong_may_available)), reverse=True)
+        with open(r'data\dong_may.txt', 'w') as file:
+            file.write('\n'.join(list_dong_may_available))
+    
+    dm_df = show_table(pd.DataFrame({"Dòng máy":list_dong_may_available}), edit=True, title='Danh sách dòng máy đã thêm')['data']
+
+    if dm_df['Dòng máy'].to_list() != list_dong_may_available:
+        list_dong_may_available = dm_df['Dòng máy'].to_list()
+        with open(r'data\dong_may.txt', 'w') as file:
+            file.write('\n'.join([i for i in list_dong_may_available if i != '']))
+    
+#!Xoá dữ liệu
 elif selected == 'Xoá dữ liệu':
     if os.path.exists(r'data\shopee_list.json'):
         if st.button('Xoá dữ liệu file shopee đầy đủ'):

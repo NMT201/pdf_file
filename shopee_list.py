@@ -87,6 +87,8 @@ def shopee_list(pdf_file):
         null_msp = json.load(file)['Mã sản phẩm']
 
     for n, page in enumerate(reader.pages):
+        if "STT" not in page.extract_text():
+            continue
         list_text = page.extract_text().split('\n')
         list_tsp = list_text.copy()
         for text in list_text:
@@ -121,7 +123,7 @@ def shopee_list(pdf_file):
         list_tsp_right = []
         
         table = camelot.read_pdf(r'data\shopee.pdf', pages=str(n+1))
-            
+        
         if len(table) > 0:
             for index, row in table[0].df.iterrows():
                 if row[0] == 'STT':

@@ -33,7 +33,10 @@ def get_msp(s, maybe_msp, list_dong_may):
     return s
 
 def tiktok(pdf_file):
-    images = convert_from_bytes(pdf_file.read(), poppler_path=r'C:\Program Files (x86)\poppler-0.68.0\bin')
+    try:
+        images = convert_from_bytes(pdf_file.read())
+    except:
+        images = convert_from_bytes(pdf_file.read(), poppler_path=r'C:\Program Files (x86)\poppler-0.68.0\bin')
     reader = PdfReader(pdf_file)
     pdf_writer = PdfFileWriter()
     pdf_out = open(r'data\tiktok.pdf', 'wb')
@@ -167,7 +170,7 @@ def tiktok(pdf_file):
                 for idx, text in enumerate(maybe_msp):
                     if ',' in text:
                         msp = text.split(',')[0]
-                        if check_msp(msp):
+                        if not check_msp(msp):
                             msp = 'null'
                         
                         for i in maybe_msp[idx+1:]:
@@ -201,7 +204,6 @@ def tiktok(pdf_file):
                     msp = 'null'
                     
                 list_msp += [msp]*list_so_luong[idx_m]
-
 
         result_dict['Mã đơn'] += [str(ma_don)]*len(list_dong_may)
         result_dict['Mã bắn vạch'] += [str(ma_ban_vach)]*len(list_dong_may)

@@ -33,10 +33,10 @@ def get_msp(s, maybe_msp, list_dong_may):
     return s
 
 def tiktok(pdf_file):
-    try:
-        images = convert_from_bytes(pdf_file.read())
-    except:
-        images = convert_from_bytes(pdf_file.read(), poppler_path=r'C:\Program Files (x86)\poppler-0.68.0\bin')
+    # try:
+    #     images = convert_from_bytes(pdf_file.read())
+    # except:
+    images = convert_from_bytes(pdf_file.read(), poppler_path=r'C:\Program Files (x86)\poppler-0.68.0\bin')
     reader = PdfReader(pdf_file)
     pdf_writer = PdfFileWriter()
     pdf_out = open(r'data\tiktok.pdf', 'wb')

@@ -124,7 +124,7 @@ elif selected == 'Lazada đầy đủ':
         accept_multiple_files=True
     )
     
-    lzd_added = open(r'data\shopee_list_added_file.txt', 'r')
+    lzd_added = open(r'data\lazada_list_added_file.txt', 'r')
     added_file = lzd_added.read().split(',')
     lzd_added.close()
     
@@ -227,7 +227,7 @@ elif selected == 'Danh sách dòng máy':
     list_dm = [re.sub('\W+', '', i.lower()) for i in dm.split(',')]
     if dm is not None and st.button('Thêm'):
         list_dong_may_available += list_dm
-        list_dong_may_available = sorted(list(set(list_dong_may_available)), reverse=True)
+        list_dong_may_available = sorted(list(set(list_dong_may_available)), key=lambda x: len(x), reverse=True)
         with open(r'data\dong_may.txt', 'w') as file:
             file.write('\n'.join(list_dong_may_available))
     
@@ -235,6 +235,7 @@ elif selected == 'Danh sách dòng máy':
 
     if dm_df['Dòng máy'].to_list() != list_dong_may_available:
         list_dong_may_available = dm_df['Dòng máy'].to_list()
+        list_dong_may_available = sorted(list_dong_may_available, key=lambda x: len(x), reverse=True)
         with open(r'data\dong_may.txt', 'w') as file:
             file.write('\n'.join([i for i in list_dong_may_available if i != '']))
     

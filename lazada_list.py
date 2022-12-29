@@ -21,15 +21,20 @@ def get_dm(msp_dm, dong_may_available):
     dong_may = 'null'
     maybe_msp = 'null'
     for dm in dong_may_available:
-        if dm in msp_dm.replace(' ', ''):
+        temp = msp_dm.replace(' ', '')
+        if dm.lower() in temp:
             dong_may = dm
             if ',' in msp_dm:
-                maybe_msp = msp_dm.split(',')[0] if dong_may in msp_dm.split(',')[1] else msp_dm.split(',')[1]
+                maybe_msp = temp.split(',')[0] if dong_may in temp.split(',')[1] else temp.split(',')[1]
+            if len(dong_may) < 3:
+                idx_dm = temp.index(dong_may)
+                if temp[idx_dm-1] != ':':   
+                    continue
             return dong_may, maybe_msp
     return dong_may, maybe_msp
     
 def get_msp(maybe_msp, tsp):
-    maybe_msp = re.sub('\W+', ' ', maybe_msp).split()
+    maybe_msp = re.sub('\W+', ' ', maybe_msp.lower()).split()
     msp = 'null'
     for word in maybe_msp:
         if check_msp(word):
@@ -40,6 +45,8 @@ def get_msp(maybe_msp, tsp):
     if msp == "null":
         if check_msp(re.sub('\W+', ' ', tsp).split()[-1]):
             msp = re.sub('\W+', ' ', tsp).split()[-1]
+            if msp == 'e110' or msp == 'a271':
+                print(msp, maybe_msp)
             for i in ['a', 'b', 'c']:
                 if i in maybe_msp:
                     msp += i
